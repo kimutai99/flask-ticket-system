@@ -1,0 +1,111 @@
+# app.py
+from flask import Flask, render_template, request, redirect, url_for
+from datetime import datetime
+import sqlite3
+
+app = Flask(__name__)
+
+# DB setup
+def init_db():
+    with sqlite3.connect('tickets.db') as conn:
+        conn.execute('''CREATE TABLE IF NOT EXISTS tickets (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            name TEXT NOT NULL,
+                            issue TEXT NOT NULL,
+                            urgency TEXT,
+                            status TEXT DEFAULT 'Open',
+                            created_at TEXT
+                        )''')
+
+# Home Page / Form
+@app.route('/', methods=['GET', 'POST'])
+def index():
+    if request.method == 'POST':
+        name = request.form['name']
+        issue = request.form['issue']
+        urgency = request.form['urgency']
+        created_at = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        with sqlite3.connect('tickets.db') as conn:
+            conn.execute("INSERT INTO tickets (name, issue, urgency, created_at) VALUES (?, ?, ?, ?)",
+                         (name, issue, urgency, created_at))
+        return redirect(url_for('index'))
+
+    with sqlite3.connect('tickets.db') as conn:
+        tickets = conn.execute("SELECT * FROM tickets ORDER BY created_at DESC").fetchall()
+    return render_template('index.html', tickets=tickets)
+
+# Close ticket
+@app.route('/close/<int:ticket_id>')
+def close_ticket(ticket_id):
+    with sqlite3.connect('tickets.db') as conn:
+        conn.execute("UPDATE tickets SET status='Closed' WHERE id=?", (ticket_id,))
+    return redirect(url_for('index'))
+
+if __name__ == '__main__':
+    init_db()
+    app.run(debug=True)
+
+
+# templates/index.html
+"""
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Support Ticket System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h2>Submit a New Ticket</h2>
+        <form method="POST">
+            Name:
+            <input type="text" name="name" required>
+            Issue:
+            <input type="text" name="issue" required>
+            Urgency:
+            <select name="urgency">
+                <option value="Low">Low</option>
+                <option value="Medium">Medium</option>
+                <option value="High">High</option>
+            </select>
+            <button type="submit">Submit Ticket</button>
+        </form>
+
+        <h2>All Tickets</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Issue</th>
+                    <th>Urgency</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for t in tickets %}
+                <tr>
+                    <td data-label="ID">{{ t[0] }}</td>
+                    <td data-label="Name">{{ t[1] }}</td>
+                    <td data-label="Issue">{{ t[2] }}</td>
+                    <td data-label="Urgency">{{ t[3] }}</td>
+                    <td data-label="Status" class="{{ 'status-open' if t[4] == 'Open' else 'status-closed' }}">{{ t[4] }}</td>
+                    <td data-label="Created">{{ t[5] }}</td>
+                    <td data-label="Action">
+                        {% if t[4] == 'Open' %}
+                        <a class="close-link" href="/close/{{ t[0] }}">Close</a>
+                        {% else %} — {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+
+

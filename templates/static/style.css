@@ -1,0 +1,138 @@
+/* Base Layout */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f6f9;
+    color: #2c3e50;
+}
+
+.container {
+    width: 96%;
+    max-width: 880px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Headings */
+h2 {
+    margin-bottom: 25px;
+    color: #007acc;
+    font-size: 24px;
+    border-bottom: 2px solid #007acc;
+    padding-bottom: 8px;
+}
+
+/* Form Styling */
+form input,
+form select {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ccd0d5;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+form input:focus,
+form select:focus {
+    border-color: #007acc;
+    box-shadow: 0 0 5px rgba(0, 122, 204, 0.3);
+    outline: none;
+}
+
+form button {
+    background-color: #007acc;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #005f99;
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    font-size: 15px;
+    background-color: #fafafa;
+}
+
+table th, table td {
+    padding: 12px 14px;
+    border: 1px solid #e0e0e0;
+    text-align: left;
+}
+
+table th {
+    background-color: #f1f1f1;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+table tr:hover {
+    background-color: #eef6fb;
+}
+
+/* Status Styling */
+.status-open {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.status-closed {
+    color: #6c757d;
+    font-style: italic;
+}
+
+/* Action Link */
+.close-link {
+    color: #d11a2a;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.close-link:hover {
+    color: #a00;
+    text-decoration: underline;
+}
+
+/* Responsive View */
+@media (max-width: 600px) {
+    .container {
+        padding: 20px;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    table th {
+        background-color: transparent;
+    }
+
+    table td {
+        padding: 12px;
+        border: none;
+        position: relative;
+    }
+
+    table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+        margin-bottom: 6px;
+    }
+}
